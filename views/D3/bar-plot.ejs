@@ -1,0 +1,32 @@
+<div>
+   <p>MouseX: <span id="mouse-x"></span></p>
+   <p>MouseY: <span id="mouse-y"></span></p>
+</div>
+
+<div>
+   <svg id="svg-container">
+   </svg>
+</div>
+
+<script>
+   // Create single dot
+   let dot = d3.select('#svg-container')
+      .append('circle')
+      .attr('id', 'dot')
+      .attr('r', 10)
+      .attr('cx', 1000)
+      .attr('cy', 500)
+      .attr('fill', 'red');
+
+   // Add mouse position listener
+   d3.select('#svg-container')
+      .on('mousemove', function(e) {
+         let [mouseX, mouseY] = d3.pointer(e, d3.select('#svg-container').node());
+         console.log(mouseX, mouseY);
+         
+         dot.attr('cx', mouseX);
+         dot.attr('cy', mouseY);
+         d3.select('#mouse-x').text(Math.round(mouseX));
+         d3.select('#mouse-y').text(Math.round(mouseY));
+      })
+</script>

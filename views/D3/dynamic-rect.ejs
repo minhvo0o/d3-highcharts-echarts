@@ -1,0 +1,64 @@
+      <div>
+         <div>
+            Rectange width
+            <input type="range" min="1" max="300" value="50" class="slider" id="width-input">
+         </div>
+
+         <div>
+            Rectangle height
+            <input type="range" min="1" max="300" value="50" class="slider" id="height-input">
+         </div>
+
+         <div>
+            Rectangle color 
+            <select name="color" id="color-input">
+               <option value="green">Green</option>
+               <option value="red">Red</option>
+               <option value="blue">Blue</option>
+               <option value="yellow">Yellow</option>
+            </select>
+         </div>
+      </div>
+
+      <div id = "svgcontainer"></div>
+
+      <script>
+         var width = 300;
+         var height = 300;
+         //Create SVG element
+         var svg = d3.select("#svgcontainer")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+         //Create and append rectangle element
+         svg.append("rect")
+            .attr('id', 'myrect')
+            .attr("x", 20)
+            .attr("y", 20)
+            .attr("width", 200)
+            .attr("height", 100)
+            .attr("fill", "green");
+
+         // Create width event listener
+         d3.select('#width-input').on('input', function() {
+            d3.select('#myrect')
+               .attr('width', this.value);
+         });
+
+         // Create height event listener
+         d3.select('#height-input').on('input', function() {
+            d3.select('#myrect')
+               .attr('height', this.value);
+         });
+
+         // Create color event listener
+         d3.select('#color-input').on('input', function() {
+            d3.select('#myrect')
+               .transition()
+               .duration(500)
+               .attr('fill', this.value);
+         });
+
+      </script>
+

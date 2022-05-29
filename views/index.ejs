@@ -5,7 +5,10 @@
     <%- include('./_partials/header') %>
 
     <!-- D3 -->
-    <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.3/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
+
 </head>
 
 <body id="page-top">
@@ -36,10 +39,19 @@
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Hình tròn SVG</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Hình SVG</h6>
                                 </div>
                                 <div class="card-body">
                                     <%- include('D3/svg'); -%>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Thay da đổi thịt</h6>
+                                </div>
+                                <div class="card-body">
+                                    <%- include('D3/dynamic-rect'); -%>
                                 </div>
                             </div>
 
@@ -51,6 +63,8 @@
                                     <%- include('D3/chart'); -%>
                                 </div>
                             </div>
+
+                            
                         </div>
 
                         <div class="col-lg-6 mb-4">                            
@@ -60,6 +74,15 @@
                                 </div>
                                 <div class="card-body">
                                     <%- include('D3/charTransform'); -%>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Moving Red Dot</h6>
+                                </div>
+                                <div class="card-body">
+                                    <%- include('D3/bar-plot'); -%>
                                 </div>
                             </div>
 
