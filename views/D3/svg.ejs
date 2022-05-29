@@ -1,0 +1,16 @@
+<div id = "svgcontainer"></div>
+      <script>
+         var width = 300;
+         var height = 300;
+         //Create SVG element
+         var svg = d3.select("#svgcontainer")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+         //Append circle 
+         svg.append("circle")
+            .attr("cx", 200)
+            .attr("cy", 150)
+            .attr("r", 100)
+            .attr("fill", "green");
+      </script>

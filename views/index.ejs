@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./_partials/header') %>
+
+    <!-- D3 -->
+    <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <%- include('./_partials/sidebar'); %>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4 mt-4">
+                        <h1 class="h3 mb-0 text-gray-800">D3.js</h1>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Content Column -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Hình tròn SVG</h6>
+                                </div>
+                                <div class="card-body">
+                                    <%- include('D3/svg'); -%>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Vẽ biểu đồ</h6>
+                                </div>
+                                <div class="card-body">
+                                    <%- include('D3/chart'); -%>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 mb-4">                            
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Animation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <%- include('D3/charTransform'); -%>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Và rất nhiều API khác</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_array_api.htm" class="list-group-item">D3.js - Array API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_collections_api.htm" class="list-group-item">D3.js - Collections API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_selection_api.htm" class="list-group-item">D3.js - Selection API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_paths_api.htm" class="list-group-item">D3.js - Paths API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_scales_api.htm" class="list-group-item">D3.js - Scales API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_axis_api.htm" class="list-group-item">D3.js - Axis API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_shapes_api.htm" class="list-group-item">D3.js - Shapes API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_colors_api.htm" class="list-group-item">D3.js - Colors API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_transitions_api.htm" class="list-group-item">D3.js - Transitions API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_dragging_api.htm" class="list-group-item">D3.js - Dragging API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_zooming_api.htm" class="list-group-item">D3.js - Zooming API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_requests_api.htm" class="list-group-item">D3.js - Requests API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_delimiterseparated_values_api.htm" class="list-group-item">Delimiter-Separated Values API</a>
+                                        <a href="https://www.tutorialspoint.com/d3js/d3js_timer_api.htm" class="list-group-item">D3.js - Timer API</a>
+                                    </div>                                    
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+            <%- include('./_partials/footer') %>
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+    <%- include('_partials/scripts')%>
+</body>
+
+</html>
