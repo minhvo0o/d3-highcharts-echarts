@@ -6,6 +6,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Nhóm 4' });
 });
 
+router.get('/interactive-scatter-d3', function(req, res, next) {
+  res.render('D3/interactive-scatter', { title: 'Nhóm 4' });
+});
+
 router.get('/Echarts', function(req, res, next) {
   res.render('Echarts', { title: 'Nhóm 4' });
 });

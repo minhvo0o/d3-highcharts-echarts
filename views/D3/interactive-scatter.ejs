@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script src="https://d3js.org/d3.v7.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.3/math.js"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+   </head>
+
+   <style>
+      #svg-container {
+         border-style: solid;
+         border-color: black;
+         border-width: 2px;
+      }
+
+      /* #left-svg {
+         border-style: solid;
+         border-color: red;
+         border-width: 2px;
+      }
+
+      #bottom-svg {
+         border-style: solid;
+         border-color: blue;
+         border-width: 2px;
+      } */
+
+      #horiz-group {
+         display: flex;
+         flex-direction: row;
+         align-items: center;
+      }
+
+      #vert-group {
+         display: flex;
+         flex-direction: column;
+         align-items: right;
+      }
+
+      #legend {
+         padding-left: 10px;
+      }
+
+      footer {
+         padding-top: 10px;
+         font-size: small;
+      }
+   </style>
+   <body>
+      <div>
+         <p>Mouse: (<span id="mouse-x"></span>, <span id="mouse-y"></span>)</p>
+         <p>Number of dots: <span id="dots-num">0</span></p>
+         <div>
+            Polynomial degree
+            <input type="number" value="1" id="poly-degree"/>
+         </div>
+         <div>
+            Regression line color
+            <input type="text" value="blue" id="line-color"/>
+            <input class="btn btn-primary btn-sm" type="button" value="Regression" id="regression-btn"/>
+         </div>
+
+         <a id="advanced-opt-toggle" href="#">Toggle advanced options</a>
+         <div id="advanced-opt" style="display: none;">
+            <div>
+               Regularization (&lambda;)
+               <input type="text" value="0" id="reg-lambda"/>
+            </div>
+            <div>
+               Plot tick
+               <input type="text" value="0.1" id="plot-tick"/>
+               <small>Curves are approximated by small lines. This parameter controls the length of each line.</small>
+            </div>
+            <div>
+               Axis range
+               <input type="text" value="0" id="min-range"/>
+               <input type="text" value="10" id="max-range"/>
+               <input type="button" value="Update" id="range-upd-btn"/>
+            </div>
+         </div>
+         <div>
+            <input class="btn btn-warning btn-sm" type="button" value="Clear lines" id="clearline-btn"/>
+            <input class="btn btn-danger btn-sm" type="button" value="Clear all" id="clearall-btn"/>
+         </div>
+      </div>
+
+      <div>
+         <div id="vert-group">
+            <div id="horiz-group">
+               <svg id="left-svg"></svg>
+               <svg id="svg-container"></svg>
+               <div id="legend">
+                  <b>Legend</b>
+                  <ul></ul>
+               </div>
+            </div>
+            <svg id="bottom-svg"></svg>
+         </div>
+      </div>
+
+      <footer>
+         <p>
+            The model is optimized using normal equation.<br>
+            The behaviour of the &lambda; parameter might be different from using a gradient optimizer.
+         </p>
+
+         <p>
+            This tool comes with no guarantee! E.g. no data validation<br>
+            By Group 25, Intelligent Data Analysis 19_21, FIT@HCMUS.
+         </p>
+      </footer>
+
+      <script>
+         let dots = [];
+         let renderSize = 450;
+         let dataRange = {
+            from: 0,
+            to: 0
+         };
+         let padding = 30;
+
+         let svg = d3.select('#svg-container')
+            .attr('width', renderSize)
+            .attr('height', renderSize);
+         
+         let leftSvg = d3.select('#left-svg')
+            .attr('height', renderSize + 20)
+            .attr('width', 40);
+
+         let botSvg = d3.select('#bottom-svg')
+            .attr('height', 20)
+            .attr('width', renderSize + 60);
+
+         // Puts a dot on the screen and save it coords
+         function dotClickHandler(e) {
+            let [mouseX, mouseY] = d3.pointer(e, svg.node());
+            // Remove event listener
+            currentDot.on('click', function(){});
+            // Change color
+            currentDot.attr('fill', 'green');
+            currentDot.attr('class', 'static-point')
+            // Create a new dot to follow the cursor
+            currentDot = createDot();
+            // Save the coordinate
+            dots = [...dots, [xRenderData(mouseX), yRenderData(mouseY)]];
+            // Update count
+            d3.select('#dots-num').text(dots.length);
+         }
+
+         // Create a new moving dot
+         function createDot() {
+            let dot = svg.append('circle')
+            .attr('id', 'dot')
+            .attr('r', 4)
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('fill', 'red');
+            dot.on('click', dotClickHandler);
+            return dot;
+         }
+
+         // Initialize first dot
+         let currentDot = createDot();
+
+         // Initialize axes
+         function createScales(dataRange, renderSize) {
+            let range = [dataRange.from, dataRange.to];
+            let xDataRender = d3.scaleLinear().domain(range).range([0, renderSize]);
+            let xRenderData = d3.scaleLinear().domain([0, renderSize]).range(range);
+
+            let yDataRender = d3.scaleLinear().domain(range).range([renderSize, 0]);
+            let yRenderData = d3.scaleLinear().domain([renderSize, 0]).range(range);
+
+            return [xDataRender, xRenderData, yDataRender, yRenderData];
+         }
+         
+         dataRange.from = d3.select('#min-range').node().value;
+         dataRange.to = d3.select('#max-range').node().value;
+         let [xDataRender, xRenderData, yDataRender, yRenderData] = createScales(dataRange, renderSize);
+
+         leftSvg.append('g')
+            .attr('transform', 'translate(30, 10)')
+            .call(d3.axisLeft(yDataRender));
+         
+         botSvg.append('g')
+            .attr('transform', 'translate(45, 0)')
+            .call(d3.axisBottom(xDataRender));
+
+         // Event listener to make the dot follow the mouse
+         svg.on('mousemove', function(e) {
+               let [mouseX, mouseY] = d3.pointer(e, svg.node());
+               // console.log(mouseX, mouseY);
+               
+               currentDot.attr('cx', mouseX);
+               currentDot.attr('cy', mouseY);
+               d3.select('#mouse-x').text(Math.round(xRenderData(mouseX)));
+               d3.select('#mouse-y').text(Math.round(yRenderData(mouseY)));
+         });
+
+         // Event listener to do regression
+         d3.select('#regression-btn').on('click', function() {
+            // Get polynomial degree
+            let degree = d3.select('#poly-degree').node().value;
+
+            // Extract x and y features
+            let x = dots.map((d) => d[0]);
+            let y = dots.map((d) => d[1]);
+            
+            // Create vertical vector y
+            y = math.matrix(y).reshape([-1, 1]);
+            
+            // Create features for matrix X
+            function polyFeatures(x, degree) {
+               let X = [math.ones(x.length)._data];
+               for (let i = 1; i <= degree; i++) {
+                  X = [...X, math.dotPow(x, i)];
+               }
+               X = math.transpose(math.matrix(X));
+               return X;
+            }
+
+            let X = polyFeatures(x, degree);
+            let lambda = d3.select('#reg-lambda').node().value;
+
+            // Fit model
+            // (X.T * X + lambda * I)-1 * X.T * y
+            let Xt = math.transpose(X);
+            let XtX = math.multiply(Xt, X);
+
+            let lambdaI = math.multiply(lambda, math.identity(XtX.size()[0]));
+
+            let Xdagger = math.inv(math.add(XtX, lambdaI));
+            Xdagger = math.multiply(Xdagger, Xt);
+
+            let theta = math.multiply(Xdagger, y);
+            
+            // Create test data
+            let tick = d3.select('#plot-tick').node().value;
+            let t = math.range(dataRange.from, dataRange.to + tick, tick)._data;
+            let T = polyFeatures(t, degree);
+
+            // Predict
+            let yhat = math.flatten(math.multiply(T, theta))._data;
+            // console.log(yhat);
+
+            let lineColor = d3.select('#line-color').node().value;
+            if (!lineColor) {
+               lineColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+            }
+
+            for (let i = 1; i <= yhat.length; i++) {
+               svg.append('line')
+                  .attr('class', `degree-${degree}`)
+                  .datum({
+                     'x1': t[i - 1],
+                     'y1': yhat[i - 1],
+                     'x2': t[i],
+                     'y2': yhat[i]
+                  })
+                  .transition()
+                  .ease(d3.easeCubic)
+                  .duration(500)
+                  .attr('x1', (d) => xDataRender(d.x1))
+                  .attr('y1', (d) => yDataRender(d.y1))
+                  .attr('x2', (d) => xDataRender(d.x2))
+                  .attr('y2', (d) => yDataRender(d.y2))
+                  .style('stroke', lineColor)
+                  .style('stroke-width', 2)
+                  .attr('class', 'regline');
+            }
+            
+            d3.select('#legend').select('ul')
+               .append('li')
+               .attr('class', 'legend-li')
+               .html(`${lineColor}: d=${degree}, &lambda;=${lambda}`)
+               .style('color', lineColor);
+         });
+
+         function clearLines() {
+            d3.selectAll('.regline')
+               .remove();
+            d3.selectAll('.legend-li')
+               .transition()
+               .remove();
+         }
+
+         function clearPoints() {
+            d3.selectAll('.static-point')
+               .transition()
+               .duration(500)
+               .ease(d3.easeCubic)
+               .remove();
+         }
+
+         // Callback for clear all
+         d3.select('#clearall-btn').on('click', function() {
+            clearPoints();
+            clearLines();
+         });
+
+         // Callback for clear line
+         d3.select('#clearline-btn').on('click', function() {
+            clearLines();
+         });
+
+         // Callback for advanced options
+         d3.select('#advanced-opt-toggle').on('click', function() {
+            let show = d3.select('#advanced-opt').style('display');
+
+            if (show == 'none') {
+               d3.select('#advanced-opt').style('display', 'block');
+            } else {
+               d3.select('#advanced-opt').style('display', 'none');
+            }
+         });
+
+         // Callback for range update
+         d3.select('#range-upd-btn').on('click', function() {
+            dataRange.from = d3.select('#min-range').node().value;
+            dataRange.to = d3.select('#max-range').node().value;
+            
+            // Update ranges
+            [xDataRender, xRenderData, yDataRender, yRenderData] = createScales(dataRange, renderSize);
+            
+            // Update axis
+            leftSvg.select('g')
+               .transition()
+               .call(d3.axisLeft(yDataRender));
+            
+            botSvg.select('g')
+               .transition()
+               .call(d3.axisBottom(xDataRender));
+               
+            // Update datapoints
+            d3.selectAll('.static-point')
+               .data(dots)
+               .transition()
+               .attr('cx', (d) => xDataRender(d[0]))
+               .attr('cy', (d) => yDataRender(d[1]));
+            
+            // Update regression lines
+            d3.selectAll('.regline')
+               .transition()
+               .attr('x1', (d) => xDataRender(d.x1))
+               .attr('y1', (d) => yDataRender(d.y1))
+               .attr('x2', (d) => xDataRender(d.x2))
+               .attr('y2', (d) => yDataRender(d.y2));
+         });
+      </script>
+   </body>
+</html>
