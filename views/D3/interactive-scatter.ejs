@@ -249,7 +249,7 @@
                lineColor = '#' + Math.floor(Math.random()*16777215).toString(16);
             }
 
-            for (let i = 1; i <= yhat.length; i++) {
+            for (let i = 1; i < yhat.length; i++) {
                svg.append('line')
                   .attr('class', `degree-${degree}`)
                   .datum({
