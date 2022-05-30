@@ -1,14 +1,11 @@
 <!-- Prepare a DOM with a defined width and height for ECharts -->
-<div id="bar-inventory-shop" style="width: 600px;height:400px;"></div>
+<div id="bar-inventory-shop" style="height: 60vh"></div>
 <script>
   // Initialize the echarts instance based on the prepared dom
   var myChart = echarts.init(document.getElementById('bar-inventory-shop'));
 
   // Specify the configuration items and data for the chart
   var option = {
-    title: {
-      text: 'Inventory'
-    },
     color: ['#d95959'
     ],
     tooltip: {},
