@@ -1,16 +1,24 @@
+<style>
+   #svg-container-bar {
+      border-style: solid;
+      border-width: 1px;
+      border-color: gainsboro;
+   }
+</style>
+
 <div>
    <p>MouseX: <span id="mouse-x"></span></p>
    <p>MouseY: <span id="mouse-y"></span></p>
 </div>
 
 <div>
-   <svg id="svg-container">
+   <svg id="svg-container-bar">
    </svg>
 </div>
 
 <script>
    // Create single dot
-   let dot = d3.select('#svg-container')
+   let dot = d3.select('#svg-container-bar')
       .append('circle')
       .attr('id', 'dot')
       .attr('r', 10)
@@ -19,9 +27,9 @@
       .attr('fill', 'red');
 
    // Add mouse position listener
-   d3.select('#svg-container')
+   d3.select('#svg-container-bar')
       .on('mousemove', function(e) {
-         let [mouseX, mouseY] = d3.pointer(e, d3.select('#svg-container').node());
+         let [mouseX, mouseY] = d3.pointer(e, d3.select('#svg-container-bar').node());
          console.log(mouseX, mouseY);
          
          dot.attr('cx', mouseX);
